@@ -1,31 +1,37 @@
-// 1. 블록의 모양과 기능을 정의합니다.
-Entry.block.say_hello_a = {
-    color: "#339AF0", // 블록 색상 (파란색 계열)
-        skeleton: "basic", // 일반 블록 모양
-            statements: [],
-                params: [],
-                    events: {},
-                        def: {
-                                type: "say_hello_a"
-                                    },
-                                        paramsKeyMap: {},
-                                            class: "custom_blocks", // 카테고리 이름
-                                                func: function (sprite, script) {
-                                                        alert("a"); // 실제 다이얼로그를 띄우는 자바스크립트 코드
-                                                                return script.callReturn();
-                                                                    },
-                                                                    };
+(function() {
+    console.log("확장 프로그램 감지됨!");
 
-                                                                    // 2. 블록을 엔트리 메뉴에 추가합니다.
-                                                                    // 보통 '판단'이나 '계산' 카테고리 뒤에 붙입니다.
-                                                                    if (!Entry.staticBlocks) {
-                                                                        Entry.staticBlocks = [];
-                                                                        }
-                                                                        Entry.staticBlocks.push({
-                                                                            category: "etc", // 기타 카테고리에 추가
-                                                                                blocks: ["say_hello_a"]
-                                                                                });
+    const checkEntry = setInterval(() => {
+        // 엔트리 엔진과 블록 메뉴가 준비되었는지 확인
+        if (window.Entry && Entry.playground && Entry.playground.blockMenu) {
+            clearInterval(checkEntry);
+            
+            try {
+                // 1. 아무 기능 없는 테스트 블록 정의
+                Entry.block.genius_test_block = {
+                    color: "#ff00ff", // 눈에 확 띄는 핑크색
+                    skeleton: "basic",
+                    template: "천재의 블록 (작동 확인용)",
+                    def: { type: "genius_test_block" },
+                    class: "test",
+                    func: (entity, script) => script.callReturn()
+                };
 
-                                                                                // 3. 변경된 블록 설정을 엔트리에 반영합니다.
-                                                                                Entry.playground.blockMenu.unbanBlocks(["say_hello_a"]);
-                                                                            
+                // 2. 계산(calc) 카테고리 맨 앞에 블록 추가
+                // unshift를 쓰면 카테고리 최상단에 붙습니다.
+                Entry.staticBlocks.push({
+                    category: 'calc',
+                    blocks: ['genius_test_block']
+                });
+
+                // 3. 차단 해제 및 메뉴 새로고침
+                Entry.playground.blockMenu.unbanClass('genius_test_block');
+                Entry.playground.blockMenu.render();
+                
+                console.log("블록 주입 성공!");
+            } catch (e) {
+                console.error("블록 주입 중 에러:", e);
+            }
+        }
+    }, 500); // 0.5초마다 엔트리가 켜졌는지 확인
+})();
